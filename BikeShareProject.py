@@ -1,5 +1,6 @@
 import time
 import pandas as pd
+import matplotlib.pyplot as plt
 import numpy as np
 
 CITY_DATA = { 'chicago': 'chicago.csv',
@@ -18,11 +19,38 @@ def get_filters():
     print('Hello! Let\'s explore some US bikeshare data!')
     # TO DO: get user input for city (chicago, new york city, washington). HINT: Use a while loop to handle invalid inputs
 
+    valid = False
+    while not valid:
+        city = input('Please enter a city (chicago, new york city, or washington): ')
+        if city == 'chicago' or city == 'new york' or city == 'washington':
+            valid = True
+        else:
+            print('Whoops! Try again! \n')
+
+
 
     # TO DO: get user input for month (all, january, february, ... , june)
 
+    valid = False
+
+    while not valid:
+        month = input('Please enter a month (all, january, february...june): ')
+        if month in ['all', 'january', 'february', 'march', 'april', 'may', 'june']:
+            valid = True
+        else:
+            print('Whoops! Try again! \n')
+
 
     # TO DO: get user input for day of week (all, monday, tuesday, ... sunday)
+
+    valid = False
+
+    while not valid:
+        day = input('Please enter a day (all, monday, tuesday...sunday): ')
+        if day in ['all', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']:
+            valid = True
+        else:
+            print('Whoops! Try again! Make sure to match case with the example...\n')
 
 
     print('-'*40)
@@ -40,6 +68,11 @@ def load_data(city, month, day):
     Returns:
         df - Pandas DataFrame containing city data filtered by month and day
     """
+    if city == 'new york city':
+        test = city.split(' ').join('_')
+        df = pd.read_csv(test + '.csv')
+    else:
+        df = pd.read_csv(city + '.csv')
 
 
     return df
@@ -122,14 +155,14 @@ def main():
     while True:
         city, month, day = get_filters()
         df = load_data(city, month, day)
-
-        time_stats(df)
-        station_stats(df)
-        trip_duration_stats(df)
-        user_stats(df)
+        print(df.head())
+        # time_stats(df)
+        # station_stats(df)
+        # trip_duration_stats(df)
+        # user_stats(df)
 
         restart = input('\nWould you like to restart? Enter yes or no.\n')
-        if restart.lower() != 'yes':
+        if restart.lower() != 'yes' and restart.lower() != 'y':
             break
 
 
