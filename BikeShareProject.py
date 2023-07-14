@@ -22,7 +22,7 @@ def get_filters():
     valid = False
     while not valid:
         city = input('Please enter a city (chicago, new york city, or washington): ')
-        if city == 'chicago' or city == 'new york' or city == 'washington':
+        if city == 'chicago' or city == 'new york city' or city == 'washington':
             valid = True
         else:
             print('Whoops! Try again! \n')
@@ -69,7 +69,7 @@ def load_data(city, month, day):
         df - Pandas DataFrame containing city data filtered by month and day
     """
     if city == 'new york city':
-        test = city.split(' ').join('_')
+        test = '_'.join(city.split(' '))
         df = pd.read_csv(test + '.csv')
     else:
         df = pd.read_csv(city + '.csv')
@@ -179,7 +179,7 @@ def station_stats(df):
 
     # TO DO: display most commonly used end station
     end_popular = df['End Station'].value_counts().idxmax()
-    print("• The most popular station to start from is " + end_popular)
+    print("• The most popular station to end at is " + end_popular)
 
     # TO DO: display most frequent combination of start station and end station trip
     print("• The most popular total trip is to start at " + trip_popular.split(' => ')[0] + ' and to end at ' + trip_popular.split(' => ')[1])
@@ -197,29 +197,53 @@ def trip_duration_stats(df):
 
     # TO DO: display total travel time
     df['Total Travel Time'] = df['End Time'] - df['Start Time']
-    print(df['Total Travel Time'].sum().total_seconds() * 3600 / 24 / 31)
+
+    print("• Wow! These bikers traveled a long time! " + str(int(df['Total Travel Time'].sum().total_seconds() // 3600)) + ' hours to be exact!')
 
 
     # TO DO: display mean travel time
+    print("• The mean travel time was about " + str(round(df['Total Travel Time'].sum().total_seconds() // 3600 / len(df['Total Travel Time']) * 60, 2)) + ' minutes.')
 
 
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
 
 
-def user_stats(df):
+def user_stats(df, city):
     """Displays statistics on bikeshare users."""
 
     print('\nCalculating User Stats...\n')
     start_time = time.time()
 
     # TO DO: Display counts of user types
+    print("• There are two types of users for our bikes (subscriber and customer). Here's the breakdown for your parameters: ")
+    print("----- Subscriber: " + str(df['User Type'].value_counts()['Subscriber']))
+    print("----- Customer: " + str(df['User Type'].value_counts()['Customer']))
 
 
     # TO DO: Display counts of gender
 
+    if city != 'washington':
 
-    # TO DO: Display earliest, most recent, and most common year of birth
+        print("• Out of the users that provided their gender, " + str(round(df['Gender'].value_counts()['Male'] / (df['Gender'].value_counts()['Male'] + df['Gender'].value_counts()['Female']) * 100, 2)) + '% were male and ' + str(round(100.0 - round(df['Gender'].value_counts()['Male'] / (df['Gender'].value_counts()['Male'] + df['Gender'].value_counts()['Female']) * 100, 2), 2)) + '% were female.')
+        print("• " + str(df['Gender'].isna().sum()) + ' riders declined to provide their gender.\n')
+
+
+        # TO DO: Display earliest, most recent, and most common year of birth
+
+        early_year = int(df['Birth Year'].min())
+        late_year = int(df['Birth Year'].max())
+        common_year = int(df['Birth Year'].mode()[0])
+
+        print("• The oldest user in this search is now " + str(2023 - early_year) + ' years old! (Born in ' + str(early_year) + ')')
+        if 2023 - early_year > 100:
+            print('----- Looks like we might have a jokester that put in a fake birth year! Unless it was a very fit ' + str(2023 - early_year) + ' year old!')
+        print("• The youngest user in this search is now " + str(2023 - late_year) + ' years old! (Born in ' + str(late_year) + ')')
+        print("• The most common birth year in this search is " + str(common_year))
+    else:
+        print("Unfortunately, we dont have user's gender data in Washington.")
+
+
 
 
     print("\nThis took %s seconds." % (time.time() - start_time))
@@ -228,15 +252,14 @@ def user_stats(df):
 
 def main():
     while True:
-        # city, month, day = get_filters()
-        # df = load_data(city, month, day)
-        df = load_data('chicago', 'all', 'all')
+        city, month, day = get_filters()
+        df = load_data(city, month, day)
+        # df = load_data('chicago', 'january', 'all')
 
-        # print(df.head(50))
         time_stats(df)
         station_stats(df)
         trip_duration_stats(df)
-        # user_stats(df)
+        user_stats(df, city)
 
         restart = input('\nWould you like to restart? Enter yes or no.\n')
         if restart.lower() != 'yes' and restart.lower() != 'y':
