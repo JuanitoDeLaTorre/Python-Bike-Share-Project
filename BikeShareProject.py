@@ -74,6 +74,26 @@ def load_data(city, month, day):
     else:
         df = pd.read_csv(city + '.csv')
 
+    #ADD USEFUL COLUMNS
+    df['Start Time'] = pd.to_datetime(df['Start Time'])
+    df['End Time'] = pd.to_datetime(df['End Time'])
+    df['month'] = df['Start Time'].dt.month
+    df['day_of_week'] = df['Start Time'].dt.day_name()
+
+    #return immediately if no filters selected
+    if month == 'all' and day == 'all':
+        return df
+
+    #MONTH FILTERING
+    if month != 'all':
+        months = ['january', 'february', 'march', 'april', 'may', 'june']
+        month_index = months.index(month) + 1
+        df = df[df['month'] == month_index]
+
+    #DAY FILTERING
+    if day != 'all':
+        df = df[df['day_of_week'] == day.title()]
+
 
     return df
 
@@ -86,11 +106,55 @@ def time_stats(df):
 
     # TO DO: display the most common month
 
+    months = ['january', 'february', 'march', 'april', 'may', 'june']
+    month_popular = months[df['month'].value_counts().idxmax() - 1].title()
+    day_popular = df['day_of_week'].value_counts().idxmax().title()
+    hour_popular = df['Start Time'].dt.hour.value_counts().idxmax()
+    pm = False
 
-    # TO DO: display the most common day of week
+    if hour_popular > 12:
+        hour_popular -= 12
+        pm = True
+
+    #CASE 1: ALL MONTHS, SPECIFIC DAY
+    if len(df['month'].unique()) > 1 and len(df['day_of_week'].unique()) == 1:
+
+        print('• The most popular month for biking for our data filtered by day (' + day_popular + ') is ' + months[df['month'].value_counts().idxmax() - 1].title())
+        print('----- There were ' + str(df['month'].value_counts().max()) + ' bikers during this month!\n')
+        if pm:
+            print('• The most common hour for biking during this time is ' + str(hour_popular) + ' PM!')
+        else:
+            print('• The most common hour for biking during this time is ' + str(hour_popular) + ' AM!')
+
+    #CASE 2: SPECIFIC MONTH, ALL DAYS
+    if len(df['month'].unique()) == 1 and len(df['day_of_week'].unique()) > 1:
+
+        print('• The most popular day of the week for biking in ' + month_popular + ' is ' + day_popular)
+        if pm:
+            print('• The most common hour for biking during this time is ' + str(hour_popular) + ' PM!')
+        else:
+            print('• The most common hour for biking during this time is ' + str(hour_popular) + ' AM!')
+
+    #CASE 3: SPECIFIC MONTH AND DAY
+    if len(df['month'].unique()) == 1 and len(df['day_of_week'].unique()) == 1:
+
+        if pm:
+            print('• The most common hour for biking during ' + month_popular + ' on ' + day_popular + 's is ' + str(hour_popular) + ' PM!')
+        else:
+            print('• The most common hour for biking during ' + month_popular + ' on ' + day_popular + 's is ' + str(hour_popular) + ' AM!')
 
 
-    # TO DO: display the most common start hour
+    #CASE 4: NO FILTERS 🤬
+    if len(df['month'].unique()) > 1 and len(df['day_of_week'].unique()) > 1:
+        print('• The most popular month for biking is ' + month_popular)
+        print('• The most popular day of the week for biking is ' + day_popular)
+
+        if pm:
+            print('• The most common hour for biking is ' + str(hour_popular) + ' PM!')
+        else:
+            print('• The most common hour for biking is ' + str(hour_popular) + ' AM!')
+
+
 
 
     print("\nThis took %s seconds." % (time.time() - start_time))
@@ -103,13 +167,22 @@ def station_stats(df):
     print('\nCalculating The Most Popular Stations and Trip...\n')
     start_time = time.time()
 
+    #combine start and end stations
+    df['Start End Combined'] = df['Start Station'] + ' => ' + df['End Station']
+    trip_popular = df['Start End Combined'].value_counts().idxmax()
+
     # TO DO: display most commonly used start station
+    start_popular = df['Start Station'].value_counts().idxmax()
+    print("• The most popular station to start from is " + start_popular)
+    # print(df['Start End Combined'].value_counts().idxmax())
 
 
     # TO DO: display most commonly used end station
-
+    end_popular = df['End Station'].value_counts().idxmax()
+    print("• The most popular station to start from is " + end_popular)
 
     # TO DO: display most frequent combination of start station and end station trip
+    print("• The most popular total trip is to start at " + trip_popular.split(' => ')[0] + ' and to end at ' + trip_popular.split(' => ')[1])
 
 
     print("\nThis took %s seconds." % (time.time() - start_time))
@@ -123,6 +196,8 @@ def trip_duration_stats(df):
     start_time = time.time()
 
     # TO DO: display total travel time
+    df['Total Travel Time'] = df['End Time'] - df['Start Time']
+    print(df['Total Travel Time'].sum().total_seconds() * 3600 / 24 / 31)
 
 
     # TO DO: display mean travel time
@@ -153,12 +228,14 @@ def user_stats(df):
 
 def main():
     while True:
-        city, month, day = get_filters()
-        df = load_data(city, month, day)
-        print(df.head())
-        # time_stats(df)
-        # station_stats(df)
-        # trip_duration_stats(df)
+        # city, month, day = get_filters()
+        # df = load_data(city, month, day)
+        df = load_data('chicago', 'all', 'all')
+
+        # print(df.head(50))
+        time_stats(df)
+        station_stats(df)
+        trip_duration_stats(df)
         # user_stats(df)
 
         restart = input('\nWould you like to restart? Enter yes or no.\n')
