@@ -21,11 +21,11 @@ def get_filters():
 
     valid = False
     while not valid:
-        city = input('Please enter a city (chicago, new york city, or washington): ')
+        city = input('Please enter a city (chicago, new york city, or washington): ').lower()
         if city == 'chicago' or city == 'new york city' or city == 'washington':
             valid = True
         else:
-            print('Whoops! Try again! \n')
+            print('Whoops! Try again! (Make sure you the match case of the examples!)\n')
 
 
 
@@ -34,11 +34,11 @@ def get_filters():
     valid = False
 
     while not valid:
-        month = input('Please enter a month (all, january, february...june): ')
+        month = input('Please enter a month (all, january, february...june): ').lower()
         if month in ['all', 'january', 'february', 'march', 'april', 'may', 'june']:
             valid = True
         else:
-            print('Whoops! Try again! \n')
+            print('Whoops! Try again!\n')
 
 
     # TO DO: get user input for day of week (all, monday, tuesday, ... sunday)
@@ -46,11 +46,11 @@ def get_filters():
     valid = False
 
     while not valid:
-        day = input('Please enter a day (all, monday, tuesday...sunday): ')
+        day = input('Please enter a day (all, monday, tuesday...sunday): ').lower()
         if day in ['all', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']:
             valid = True
         else:
-            print('Whoops! Try again! Make sure to match case with the example...\n')
+            print('Whoops! Try again!\n')
 
 
     print('-'*40)
@@ -150,9 +150,17 @@ def time_stats(df):
         print('• The most popular day of the week for biking is ' + day_popular)
 
         if pm:
-            print('• The most common hour for biking is ' + str(hour_popular) + ' PM!')
+            print('• The most common hour for biking is ' + str(hour_popular) + ' PM!\n')
         else:
-            print('• The most common hour for biking is ' + str(hour_popular) + ' AM!')
+            print('• The most common hour for biking is ' + str(hour_popular) + ' AM!\n')
+
+    res = input('Want to see the raw data? (y or n): ')
+    i = 0
+
+    while res != 'n':
+        print(df[['Start Time', 'month', 'day_of_week']][i: i + 5])
+        res = input('Want to see more data? (y or n): ')
+        i += 5
 
 
 
@@ -182,8 +190,15 @@ def station_stats(df):
     print("• The most popular station to end at is " + end_popular)
 
     # TO DO: display most frequent combination of start station and end station trip
-    print("• The most popular total trip is to start at " + trip_popular.split(' => ')[0] + ' and to end at ' + trip_popular.split(' => ')[1])
+    print("• The most popular total trip is to start at " + trip_popular.split(' => ')[0] + ' and to end at ' + trip_popular.split(' => ')[1] + '\n')
 
+    res = input('Want to see the raw data? (y or n): ')
+    i = 0
+
+    while res != 'n':
+        print(df[['Start Station', 'End Station', 'Start End Combined']][i: i + 5])
+        res = input('Want to see more data? (y or n): ')
+        i += 5
 
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
@@ -202,7 +217,15 @@ def trip_duration_stats(df):
 
 
     # TO DO: display mean travel time
-    print("• The mean travel time was about " + str(round(df['Total Travel Time'].sum().total_seconds() // 3600 / len(df['Total Travel Time']) * 60, 2)) + ' minutes.')
+    print("• The mean travel time was about " + str(round(df['Total Travel Time'].sum().total_seconds() // 3600 / len(df['Total Travel Time']) * 60, 2)) + ' minutes.\n')
+
+    res = input('Want to see the raw data? (y or n): ')
+    i = 0
+
+    while res != 'n':
+        print(df[['Start Time', 'End Time', 'Total Travel Time']][i: i + 5])
+        res = input('Want to see more data? (y or n): ')
+        i += 5
 
 
     print("\nThis took %s seconds." % (time.time() - start_time))
@@ -238,10 +261,21 @@ def user_stats(df, city):
         print("• The oldest user in this search is now " + str(2023 - early_year) + ' years old! (Born in ' + str(early_year) + ')')
         if 2023 - early_year > 100:
             print('----- Looks like we might have a jokester that put in a fake birth year! Unless it was a very fit ' + str(2023 - early_year) + ' year old!')
-        print("• The youngest user in this search is now " + str(2023 - late_year) + ' years old! (Born in ' + str(late_year) + ')')
+        print("• The youngest user in this search is now " + str(2023 - late_year) + ' years old! (Born in ' + str(late_year) + ')\n')
         print("• The most common birth year in this search is " + str(common_year))
     else:
-        print("Unfortunately, we dont have user's gender data in Washington.")
+        print("Unfortunately, we dont have user's gender data in Washington.\n")
+
+    res = input('Want to see the raw data? (y or n): ')
+    i = 0
+
+    while res != 'n':
+        if city != 'washington':
+            print(df[['Birth Year', 'User Type', 'Gender']][i: i + 5])
+        else:
+            print(df[['User Type']][i: i + 5])
+        res = input('Want to see more data? (y or n): ')
+        i += 5
 
 
 
@@ -260,6 +294,10 @@ def main():
         station_stats(df)
         trip_duration_stats(df)
         user_stats(df, city)
+
+        stats = input('Do you want to see descriptive stats for this search? (y or n): ').lower()
+        if stats == 'y':
+            print(df.describe())
 
         restart = input('\nWould you like to restart? Enter yes or no.\n')
         if restart.lower() != 'yes' and restart.lower() != 'y':
