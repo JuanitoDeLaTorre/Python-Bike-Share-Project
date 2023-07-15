@@ -154,13 +154,8 @@ def time_stats(df):
         else:
             print('• The most common hour for biking is ' + str(hour_popular) + ' AM!\n')
 
-    res = input('Want to see the raw data? (y or n): ')
-    i = 0
-
-    while res != 'n':
-        print(df[['Start Time', 'month', 'day_of_week']][i: i + 5])
-        res = input('Want to see more data? (y or n): ')
-        i += 5
+    # ask the user if they want to display raw data using separate fx
+    display_raw_data(df, ['Start Time', 'day_of_week', 'month'])
 
 
 
@@ -192,13 +187,8 @@ def station_stats(df):
     # TO DO: display most frequent combination of start station and end station trip
     print("• The most popular total trip is to start at " + trip_popular.split(' => ')[0] + ' and to end at ' + trip_popular.split(' => ')[1] + '\n')
 
-    res = input('Want to see the raw data? (y or n): ')
-    i = 0
-
-    while res != 'n':
-        print(df[['Start Station', 'End Station', 'Start End Combined']][i: i + 5])
-        res = input('Want to see more data? (y or n): ')
-        i += 5
+    # ask the user if they want to display raw data using separate fx
+    display_raw_data(df, ['Start Station', 'End Station', 'Start End Combined'])
 
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
@@ -219,13 +209,8 @@ def trip_duration_stats(df):
     # TO DO: display mean travel time
     print("• The mean travel time was about " + str(round(df['Total Travel Time'].sum().total_seconds() // 3600 / len(df['Total Travel Time']) * 60, 2)) + ' minutes.\n')
 
-    res = input('Want to see the raw data? (y or n): ')
-    i = 0
-
-    while res != 'n':
-        print(df[['Start Time', 'End Time', 'Total Travel Time']][i: i + 5])
-        res = input('Want to see more data? (y or n): ')
-        i += 5
+    #ask the user if they want to display raw data using separate fx
+    display_raw_data(df, ['Start Time', 'End Time', 'Total Travel Time'])
 
 
     print("\nThis took %s seconds." % (time.time() - start_time))
@@ -266,22 +251,25 @@ def user_stats(df, city):
     else:
         print("Unfortunately, we dont have user's gender data in Washington.\n")
 
+    #conditional display of raw data due to the lack of gender and birth year columns in washington.csv
+    if city != 'washington':
+        display_raw_data(df, ['User Type', 'Birth Year', 'Gender'])
+    else:
+        display_raw_data(df, ['User Type'])
+
+    print("\nThis took %s seconds." % (time.time() - start_time))
+    print('-'*40)
+
+def display_raw_data(df, columns):
+    """Prompts the user whether or not they would like to see the raw data (in 5 row groups). Customized by column arg for each statistic group."""
+
     res = input('Want to see the raw data? (y or n): ')
     i = 0
 
     while res != 'n':
-        if city != 'washington':
-            print(df[['Birth Year', 'User Type', 'Gender']][i: i + 5])
-        else:
-            print(df[['User Type']][i: i + 5])
+        print(df[columns][i: i + 5])
         res = input('Want to see more data? (y or n): ')
         i += 5
-
-
-
-
-    print("\nThis took %s seconds." % (time.time() - start_time))
-    print('-'*40)
 
 
 def main():
