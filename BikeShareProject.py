@@ -17,7 +17,8 @@ def get_filters():
         (str) day - name of the day of week to filter by, or "all" to apply no day filter
     """
     print('Hello! Let\'s explore some US bikeshare data!')
-    # TO DO: get user input for city (chicago, new york city, washington). HINT: Use a while loop to handle invalid inputs
+    
+    # get user input for city (chicago, new york city, washington). HINT: Use a while loop to handle invalid inputs
 
     valid = False
     while not valid:
@@ -29,7 +30,7 @@ def get_filters():
 
 
 
-    # TO DO: get user input for month (all, january, february, ... , june)
+    # get user input for month (all, january, february, ... , june)
 
     valid = False
 
@@ -41,7 +42,7 @@ def get_filters():
             print('Whoops! Try again!\n')
 
 
-    # TO DO: get user input for day of week (all, monday, tuesday, ... sunday)
+    #   get user input for day of week (all, monday, tuesday, ... sunday)
 
     valid = False
 
@@ -68,6 +69,7 @@ def load_data(city, month, day):
     Returns:
         df - Pandas DataFrame containing city data filtered by month and day
     """
+
     if city == 'new york city':
         test = '_'.join(city.split(' '))
         df = pd.read_csv(test + '.csv')
@@ -104,7 +106,7 @@ def time_stats(df):
     print('\nCalculating The Most Frequent Times of Travel...\n')
     start_time = time.time()
 
-    # TO DO: display the most common month
+    #   display the most common month
 
     months = ['january', 'february', 'march', 'april', 'may', 'june']
     month_popular = months[df['month'].value_counts().idxmax() - 1].title()
@@ -174,17 +176,17 @@ def station_stats(df):
     df['Start End Combined'] = df['Start Station'] + ' => ' + df['End Station']
     trip_popular = df['Start End Combined'].value_counts().idxmax()
 
-    # TO DO: display most commonly used start station
+    #   display most commonly used start station
     start_popular = df['Start Station'].value_counts().idxmax()
     print("• The most popular station to start from is " + start_popular)
     # print(df['Start End Combined'].value_counts().idxmax())
 
 
-    # TO DO: display most commonly used end station
+    #   display most commonly used end station
     end_popular = df['End Station'].value_counts().idxmax()
     print("• The most popular station to end at is " + end_popular)
 
-    # TO DO: display most frequent combination of start station and end station trip
+    #   display most frequent combination of start station and end station trip
     print("• The most popular total trip is to start at " + trip_popular.split(' => ')[0] + ' and to end at ' + trip_popular.split(' => ')[1] + '\n')
 
     # ask the user if they want to display raw data using separate fx
@@ -200,13 +202,13 @@ def trip_duration_stats(df):
     print('\nCalculating Trip Duration...\n')
     start_time = time.time()
 
-    # TO DO: display total travel time
+    #   display total travel time
     df['Total Travel Time'] = df['End Time'] - df['Start Time']
 
     print("• Wow! These bikers traveled a long time! " + str(int(df['Total Travel Time'].sum().total_seconds() // 3600)) + ' hours to be exact!')
 
 
-    # TO DO: display mean travel time
+    #   display mean travel time
     print("• The mean travel time was about " + str(round(df['Total Travel Time'].sum().total_seconds() // 3600 / len(df['Total Travel Time']) * 60, 2)) + ' minutes.\n')
 
     #ask the user if they want to display raw data using separate fx
@@ -223,13 +225,13 @@ def user_stats(df, city):
     print('\nCalculating User Stats...\n')
     start_time = time.time()
 
-    # TO DO: Display counts of user types
+    #   Display counts of user types
     print("• There are two types of users for our bikes (subscriber and customer). Here's the breakdown for your parameters: ")
     print("----- Subscriber: " + str(df['User Type'].value_counts()['Subscriber']))
     print("----- Customer: " + str(df['User Type'].value_counts()['Customer']))
 
 
-    # TO DO: Display counts of gender
+    #   Display counts of gender
 
     if city != 'washington':
 
@@ -237,7 +239,7 @@ def user_stats(df, city):
         print("• " + str(df['Gender'].isna().sum()) + ' riders declined to provide their gender.\n')
 
 
-        # TO DO: Display earliest, most recent, and most common year of birth
+        #   Display earliest, most recent, and most common year of birth
 
         early_year = int(df['Birth Year'].min())
         late_year = int(df['Birth Year'].max())
@@ -276,7 +278,6 @@ def main():
     while True:
         city, month, day = get_filters()
         df = load_data(city, month, day)
-        # df = load_data('chicago', 'january', 'all')
 
         time_stats(df)
         station_stats(df)
