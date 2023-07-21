@@ -54,7 +54,7 @@ def get_filters():
             print('Whoops! Try again!\n')
 
 
-    print('-'*40)
+    print('-'* 45)
     return city, month, day
 
 
@@ -163,7 +163,7 @@ def time_stats(df):
 
 
     print("\nThis took %s seconds." % (time.time() - start_time))
-    print('-'*40)
+    print('-'* 45)
 
 
 def station_stats(df):
@@ -193,7 +193,7 @@ def station_stats(df):
     display_raw_data(df, ['Start Station', 'End Station', 'Start End Combined'])
 
     print("\nThis took %s seconds." % (time.time() - start_time))
-    print('-'*40)
+    print('-'* 45)
 
 
 def trip_duration_stats(df):
@@ -216,7 +216,7 @@ def trip_duration_stats(df):
 
 
     print("\nThis took %s seconds." % (time.time() - start_time))
-    print('-'*40)
+    print('-'* 45)
 
 
 def user_stats(df, city):
@@ -260,7 +260,7 @@ def user_stats(df, city):
         display_raw_data(df, ['User Type'])
 
     print("\nThis took %s seconds." % (time.time() - start_time))
-    print('-'*40)
+    print('-'* 45)
 
 def display_raw_data(df, columns):
     """Prompts the user whether or not they would like to see the raw data (in 5 row groups). Customized by column arg for each statistic group."""
